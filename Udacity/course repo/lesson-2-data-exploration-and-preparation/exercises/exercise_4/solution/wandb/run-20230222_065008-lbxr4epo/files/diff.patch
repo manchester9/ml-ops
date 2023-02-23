@@ -1,0 +1,306 @@
+diff --git a/Udacity/course repo/lesson-2-data-exploration-and-preparation/exercises/exercise_4/solution/EDA.ipynb b/Udacity/course repo/lesson-2-data-exploration-and-preparation/exercises/exercise_4/solution/EDA.ipynb
+index 117cb01..136f75f 100644
+--- a/Udacity/course repo/lesson-2-data-exploration-and-preparation/exercises/exercise_4/solution/EDA.ipynb	
++++ b/Udacity/course repo/lesson-2-data-exploration-and-preparation/exercises/exercise_4/solution/EDA.ipynb	
+@@ -2,10 +2,94 @@
+  "cells": [
+   {
+    "cell_type": "code",
+-   "execution_count": 1,
++   "execution_count": 2,
+    "metadata": {},
+-   "outputs": [],
++   "outputs": [
++    {
++     "name": "stdout",
++     "output_type": "stream",
++     "text": [
++      "Collecting pandas_profiling\n",
++      "  Downloading pandas_profiling-3.6.6-py2.py3-none-any.whl (324 kB)\n",
++      "     -------------------------------------- 324.4/324.4 kB 6.7 MB/s eta 0:00:00\n",
++      "Collecting ydata-profiling\n",
++      "  Downloading ydata_profiling-4.0.0-py2.py3-none-any.whl (344 kB)\n",
++      "     ------------------------------------- 344.5/344.5 kB 20.9 MB/s eta 0:00:00\n",
++      "Requirement already satisfied: numpy<1.24,>=1.16.0 in c:\\users\\roland\\anaconda3\\lib\\site-packages (from ydata-profiling->pandas_profiling) (1.21.5)\n",
++      "Requirement already satisfied: PyYAML<6.1,>=5.0.0 in c:\\users\\roland\\anaconda3\\lib\\site-packages (from ydata-profiling->pandas_profiling) (6.0)\n",
++      "Collecting visions[type_image_path]==0.7.5\n",
++      "  Downloading visions-0.7.5-py3-none-any.whl (102 kB)\n",
++      "     -------------------------------------- 102.7/102.7 kB 5.8 MB/s eta 0:00:00\n",
++      "Requirement already satisfied: jinja2<3.2,>=2.11.1 in c:\\users\\roland\\appdata\\roaming\\python\\python39\\site-packages (from ydata-profiling->pandas_profiling) (3.1.2)\n",
++      "Collecting htmlmin==0.1.12\n",
++      "  Downloading htmlmin-0.1.12.tar.gz (19 kB)\n",
++      "  Preparing metadata (setup.py): started\n",
++      "  Preparing metadata (setup.py): finished with status 'done'\n",
++      "Requirement already satisfied: tqdm<4.65,>=4.48.2 in c:\\users\\roland\\anaconda3\\lib\\site-packages (from ydata-profiling->pandas_profiling) (4.64.1)\n",
++      "Requirement already satisfied: seaborn<0.13,>=0.10.1 in c:\\users\\roland\\anaconda3\\lib\\site-packages (from ydata-profiling->pandas_profiling) (0.11.2)\n",
++      "Collecting multimethod<1.10,>=1.4\n",
++      "  Downloading multimethod-1.9.1-py3-none-any.whl (10 kB)\n",
++      "Collecting phik<0.13,>=0.11.1\n",
++      "  Downloading phik-0.12.3-cp39-cp39-win_amd64.whl (663 kB)\n",
++      "     ------------------------------------- 663.5/663.5 kB 13.9 MB/s eta 0:00:00\n",
++      "Requirement already satisfied: requests<2.29,>=2.24.0 in c:\\users\\roland\\anaconda3\\lib\\site-packages (from ydata-profiling->pandas_profiling) (2.28.1)\n",
++      "Requirement already satisfied: statsmodels<0.14,>=0.13.2 in c:\\users\\roland\\anaconda3\\lib\\site-packages (from ydata-profiling->pandas_profiling) (0.13.2)\n",
++      "Collecting typeguard<2.14,>=2.13.2\n",
++      "  Downloading typeguard-2.13.3-py3-none-any.whl (17 kB)\n",
++      "Requirement already satisfied: scipy<1.10,>=1.4.1 in c:\\users\\roland\\anaconda3\\lib\\site-packages (from ydata-profiling->pandas_profiling) (1.9.1)\n",
++      "Collecting pydantic<1.11,>=1.8.1\n",
++      "  Downloading pydantic-1.10.5-cp39-cp39-win_amd64.whl (2.2 MB)\n",
++      "     ---------------------------------------- 2.2/2.2 MB 17.3 MB/s eta 0:00:00\n",
++      "Requirement already satisfied: matplotlib<3.7,>=3.2 in c:\\users\\roland\\anaconda3\\lib\\site-packages (from ydata-profiling->pandas_profiling) (3.5.2)\n",
++      "Requirement already satisfied: pandas!=1.4.0,<1.6,>1.1 in c:\\users\\roland\\anaconda3\\lib\\site-packages (from ydata-profiling->pandas_profiling) (1.4.4)\n",
++      "Requirement already satisfied: networkx>=2.4 in c:\\users\\roland\\anaconda3\\lib\\site-packages (from visions[type_image_path]==0.7.5->ydata-profiling->pandas_profiling) (2.8.4)\n",
++      "Collecting tangled-up-in-unicode>=0.0.4\n",
++      "  Downloading tangled_up_in_unicode-0.2.0-py3-none-any.whl (4.7 MB)\n",
++      "     ---------------------------------------- 4.7/4.7 MB 16.8 MB/s eta 0:00:00\n",
++      "Requirement already satisfied: attrs>=19.3.0 in c:\\users\\roland\\anaconda3\\lib\\site-packages (from visions[type_image_path]==0.7.5->ydata-profiling->pandas_profiling) (21.4.0)\n",
++      "Collecting imagehash\n",
++      "  Downloading ImageHash-4.3.1-py2.py3-none-any.whl (296 kB)\n",
++      "     -------------------------------------- 296.5/296.5 kB 9.2 MB/s eta 0:00:00\n",
++      "Requirement already satisfied: Pillow in c:\\users\\roland\\anaconda3\\lib\\site-packages (from visions[type_image_path]==0.7.5->ydata-profiling->pandas_profiling) (9.2.0)\n",
++      "Requirement already satisfied: MarkupSafe>=2.0 in c:\\users\\roland\\anaconda3\\lib\\site-packages (from jinja2<3.2,>=2.11.1->ydata-profiling->pandas_profiling) (2.0.1)\n",
++      "Requirement already satisfied: cycler>=0.10 in c:\\users\\roland\\anaconda3\\lib\\site-packages (from matplotlib<3.7,>=3.2->ydata-profiling->pandas_profiling) (0.11.0)\n",
++      "Requirement already satisfied: pyparsing>=2.2.1 in c:\\users\\roland\\anaconda3\\lib\\site-packages (from matplotlib<3.7,>=3.2->ydata-profiling->pandas_profiling) (3.0.9)\n",
++      "Requirement already satisfied: packaging>=20.0 in c:\\users\\roland\\anaconda3\\lib\\site-packages (from matplotlib<3.7,>=3.2->ydata-profiling->pandas_profiling) (21.3)\n",
++      "Requirement already satisfied: fonttools>=4.22.0 in c:\\users\\roland\\anaconda3\\lib\\site-packages (from matplotlib<3.7,>=3.2->ydata-profiling->pandas_profiling) (4.25.0)\n",
++      "Requirement already satisfied: kiwisolver>=1.0.1 in c:\\users\\roland\\anaconda3\\lib\\site-packages (from matplotlib<3.7,>=3.2->ydata-profiling->pandas_profiling) (1.4.2)\n",
++      "Requirement already satisfied: python-dateutil>=2.7 in c:\\users\\roland\\anaconda3\\lib\\site-packages (from matplotlib<3.7,>=3.2->ydata-profiling->pandas_profiling) (2.8.2)\n",
++      "Requirement already satisfied: pytz>=2020.1 in c:\\users\\roland\\anaconda3\\lib\\site-packages (from pandas!=1.4.0,<1.6,>1.1->ydata-profiling->pandas_profiling) (2022.1)\n",
++      "Requirement already satisfied: joblib>=0.14.1 in c:\\users\\roland\\anaconda3\\lib\\site-packages (from phik<0.13,>=0.11.1->ydata-profiling->pandas_profiling) (1.2.0)\n",
++      "Requirement already satisfied: typing-extensions>=4.2.0 in c:\\users\\roland\\anaconda3\\lib\\site-packages (from pydantic<1.11,>=1.8.1->ydata-profiling->pandas_profiling) (4.3.0)\n",
++      "Requirement already satisfied: certifi>=2017.4.17 in c:\\users\\roland\\anaconda3\\lib\\site-packages (from requests<2.29,>=2.24.0->ydata-profiling->pandas_profiling) (2022.12.7)\n",
++      "Requirement already satisfied: charset-normalizer<3,>=2 in c:\\users\\roland\\anaconda3\\lib\\site-packages (from requests<2.29,>=2.24.0->ydata-profiling->pandas_profiling) (2.0.4)\n",
++      "Requirement already satisfied: idna<4,>=2.5 in c:\\users\\roland\\anaconda3\\lib\\site-packages (from requests<2.29,>=2.24.0->ydata-profiling->pandas_profiling) (3.3)\n",
++      "Requirement already satisfied: urllib3<1.27,>=1.21.1 in c:\\users\\roland\\anaconda3\\lib\\site-packages (from requests<2.29,>=2.24.0->ydata-profiling->pandas_profiling) (1.26.11)\n",
++      "Requirement already satisfied: patsy>=0.5.2 in c:\\users\\roland\\anaconda3\\lib\\site-packages (from statsmodels<0.14,>=0.13.2->ydata-profiling->pandas_profiling) (0.5.2)\n",
++      "Requirement already satisfied: colorama in c:\\users\\roland\\anaconda3\\lib\\site-packages (from tqdm<4.65,>=4.48.2->ydata-profiling->pandas_profiling) (0.4.5)\n",
++      "Requirement already satisfied: six in c:\\users\\roland\\anaconda3\\lib\\site-packages (from patsy>=0.5.2->statsmodels<0.14,>=0.13.2->ydata-profiling->pandas_profiling) (1.16.0)\n",
++      "Requirement already satisfied: PyWavelets in c:\\users\\roland\\anaconda3\\lib\\site-packages (from imagehash->visions[type_image_path]==0.7.5->ydata-profiling->pandas_profiling) (1.3.0)\n",
++      "Building wheels for collected packages: htmlmin\n",
++      "  Building wheel for htmlmin (setup.py): started\n",
++      "  Building wheel for htmlmin (setup.py): finished with status 'done'\n",
++      "  Created wheel for htmlmin: filename=htmlmin-0.1.12-py3-none-any.whl size=27082 sha256=92f0ec550dd1a3d9b7c6270dcae7d1f79fa484c6a04d49686e70cf66b412cf3f\n",
++      "  Stored in directory: c:\\users\\roland\\appdata\\local\\pip\\cache\\wheels\\1d\\05\\04\\c6d7d3b66539d9e659ac6dfe81e2d0fd4c1a8316cc5a403300\n",
++      "Successfully built htmlmin\n",
++      "Installing collected packages: htmlmin, typeguard, tangled-up-in-unicode, pydantic, multimethod, imagehash, visions, phik, ydata-profiling, pandas_profiling\n",
++      "Successfully installed htmlmin-0.1.12 imagehash-4.3.1 multimethod-1.9.1 pandas_profiling-3.6.6 phik-0.12.3 pydantic-1.10.5 tangled-up-in-unicode-0.2.0 typeguard-2.13.3 visions-0.7.5 ydata-profiling-4.0.0\n"
++     ]
++    },
++    {
++     "name": "stderr",
++     "output_type": "stream",
++     "text": [
++      "C:\\Users\\Roland\\AppData\\Local\\Temp\\ipykernel_10252\\300996393.py:7: DeprecationWarning: `import pandas_profiling` is going to be deprecated by April 1st. Please use `import ydata_profiling` instead.\n",
++      "  from pandas_profiling import ProfileReport\n"
++     ]
++    }
++   ],
+    "source": [
++    "!pip install pandas_profiling\n",
+     "import wandb\n",
+     "import matplotlib.pyplot as plt\n",
+     "import seaborn as sns\n",
+@@ -16,28 +100,139 @@
+   },
+   {
+    "cell_type": "code",
+-   "execution_count": 2,
++   "execution_count": 11,
++   "metadata": {},
++   "outputs": [
++    {
++     "data": {
++      "application/vnd.jupyter.widget-view+json": {
++       "model_id": "34d0455d323c43ef9763c4d532408177",
++       "version_major": 2,
++       "version_minor": 0
++      },
++      "text/plain": [
++       "Summarize dataset:   0%|          | 0/5 [00:00<?, ?it/s]"
++      ]
++     },
++     "metadata": {},
++     "output_type": "display_data"
++    },
++    {
++     "data": {
++      "application/vnd.jupyter.widget-view+json": {
++       "model_id": "e9bc1389f6f34f599b0e9a67ba710901",
++       "version_major": 2,
++       "version_minor": 0
++      },
++      "text/plain": [
++       "Generate report structure:   0%|          | 0/1 [00:00<?, ?it/s]"
++      ]
++     },
++     "metadata": {},
++     "output_type": "display_data"
++    },
++    {
++     "data": {
++      "application/vnd.jupyter.widget-view+json": {
++       "model_id": "",
++       "version_major": 2,
++       "version_minor": 0
++      },
++      "text/plain": [
++       "Render widgets:   0%|          | 0/1 [00:00<?, ?it/s]"
++      ]
++     },
++     "metadata": {},
++     "output_type": "display_data"
++    },
++    {
++     "data": {
++      "application/vnd.jupyter.widget-view+json": {
++       "model_id": "45be88f9e26547289adfeb114bbd0b4f",
++       "version_major": 2,
++       "version_minor": 0
++      },
++      "text/plain": [
++       "VBox(children=(Tab(children=(Tab(children=(GridBox(children=(VBox(children=(GridspecLayout(children=(HTML(valu…"
++      ]
++     },
++     "metadata": {},
++     "output_type": "display_data"
++    }
++   ],
++   "source": [
++    "import pandas_profiling\n",
++    "import pandas as pd\n",
++    "\n",
++    "df = pd.read_parquet(\"genres_mod.parquet\")\n",
++    "profile = pandas_profiling.ProfileReport(df)\n",
++    "profile.to_widgets()"
++   ]
++  },
++  {
++   "cell_type": "code",
++   "execution_count": 3,
+    "metadata": {},
+    "outputs": [
+     {
+      "name": "stderr",
+      "output_type": "stream",
+      "text": [
+-      "\u001b[34m\u001b[1mwandb\u001b[0m: Currently logged in as: \u001b[33mgiacomovianello\u001b[0m (use `wandb login --relogin` to force relogin)\n",
+-      "\u001b[34m\u001b[1mwandb\u001b[0m: wandb version 0.10.25 is available!  To upgrade, please run:\n",
+-      "\u001b[34m\u001b[1mwandb\u001b[0m:  $ pip install wandb --upgrade\n"
++      "\u001b[34m\u001b[1mwandb\u001b[0m: Currently logged in as: \u001b[33mferrao\u001b[0m. Use \u001b[1m`wandb login --relogin`\u001b[0m to force relogin\n"
+      ]
+     },
+     {
+      "data": {
+       "text/html": [
+-       "\n",
+-       "                Tracking run with wandb version 0.10.21<br/>\n",
+-       "                Syncing run <strong style=\"color:#cdcd00\">azure-star-2</strong> to <a href=\"https://wandb.ai\" target=\"_blank\">Weights & Biases</a> <a href=\"https://docs.wandb.com/integrations/jupyter.html\" target=\"_blank\">(Documentation)</a>.<br/>\n",
+-       "                Project page: <a href=\"https://wandb.ai/giacomovianello/exercise_4\" target=\"_blank\">https://wandb.ai/giacomovianello/exercise_4</a><br/>\n",
+-       "                Run page: <a href=\"https://wandb.ai/giacomovianello/exercise_4/runs/2shcnmaf\" target=\"_blank\">https://wandb.ai/giacomovianello/exercise_4/runs/2shcnmaf</a><br/>\n",
+-       "                Run data is saved locally in <code>/home/giacomov/udacity/repo/nd0821-c2-build-model-workflow/lesson-2-data-exploration-and-preparation/exercises/exercise_4/solution/wandb/run-20210405_183751-2shcnmaf</code><br/><br/>\n",
+-       "            "
++       "Tracking run with wandb version 0.13.10"
++      ],
++      "text/plain": [
++       "<IPython.core.display.HTML object>"
++      ]
++     },
++     "metadata": {},
++     "output_type": "display_data"
++    },
++    {
++     "data": {
++      "text/html": [
++       "Run data is saved locally in <code>C:\\Users\\Roland\\MLOps\\Udacity\\course repo\\lesson-2-data-exploration-and-preparation\\exercises\\exercise_4\\solution\\wandb\\run-20230222_063835-9mag0jsc</code>"
++      ],
++      "text/plain": [
++       "<IPython.core.display.HTML object>"
++      ]
++     },
++     "metadata": {},
++     "output_type": "display_data"
++    },
++    {
++     "data": {
++      "text/html": [
++       "Syncing run <strong><a href='https://wandb.ai/ferrao/exercise_4/runs/9mag0jsc' target=\"_blank\">worthy-aardvark-1</a></strong> to <a href='https://wandb.ai/ferrao/exercise_4' target=\"_blank\">Weights & Biases</a> (<a href='https://wandb.me/run' target=\"_blank\">docs</a>)<br/>"
++      ],
++      "text/plain": [
++       "<IPython.core.display.HTML object>"
++      ]
++     },
++     "metadata": {},
++     "output_type": "display_data"
++    },
++    {
++     "data": {
++      "text/html": [
++       " View project at <a href='https://wandb.ai/ferrao/exercise_4' target=\"_blank\">https://wandb.ai/ferrao/exercise_4</a>"
++      ],
++      "text/plain": [
++       "<IPython.core.display.HTML object>"
++      ]
++     },
++     "metadata": {},
++     "output_type": "display_data"
++    },
++    {
++     "data": {
++      "text/html": [
++       " View run at <a href='https://wandb.ai/ferrao/exercise_4/runs/9mag0jsc' target=\"_blank\">https://wandb.ai/ferrao/exercise_4/runs/9mag0jsc</a>"
+       ],
+       "text/plain": [
+        "<IPython.core.display.HTML object>"
+@@ -57,11 +252,33 @@
+   },
+   {
+    "cell_type": "code",
+-   "execution_count": 3,
++   "execution_count": 6,
++   "metadata": {},
++   "outputs": [
++    {
++     "data": {
++      "text/plain": [
++       "'C:\\\\Users\\\\Roland\\\\MLOps\\\\Udacity\\\\course repo\\\\lesson-2-data-exploration-and-preparation\\\\exercises\\\\exercise_4\\\\solution'"
++      ]
++     },
++     "execution_count": 6,
++     "metadata": {},
++     "output_type": "execute_result"
++    }
++   ],
++   "source": [
++    "import os\n",
++    "os.getcwd()\n",
++    "os.set"
++   ]
++  },
++  {
++   "cell_type": "code",
++   "execution_count": 10,
+    "metadata": {},
+    "outputs": [],
+    "source": [
+-    "artifact = run.use_artifact(\"exercise_4/genres_mod.parquet:latest\")"
++    "# artifact = run.use_artifact(\"exercise_4/worthy-aardvark-1.parquet:latest\")"
+    ]
+   },
+   {
+@@ -152690,7 +152907,7 @@
+  ],
+  "metadata": {
+   "kernelspec": {
+-   "display_name": "Python 3",
++   "display_name": "Python 3 (ipykernel)",
+    "language": "python",
+    "name": "python3"
+   },
+@@ -152704,7 +152921,7 @@
+    "name": "python",
+    "nbconvert_exporter": "python",
+    "pygments_lexer": "ipython3",
+-   "version": "3.8.8"
++   "version": "3.9.13"
+   },
+   "widgets": {
+    "application/vnd.jupyter.widget-state+json": {
