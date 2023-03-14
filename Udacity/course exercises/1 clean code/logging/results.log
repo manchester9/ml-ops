@@ -1,2 +1,0 @@
-root - INFO - Summing first_val + second_val: SUCCESS
-root - ERROR - first_val and second_val should be integers.
