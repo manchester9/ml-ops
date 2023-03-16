@@ -85,12 +85,11 @@ def encoder_helper(df, category_lst, response):
         df[cat + '_' + response] = df[cat].map(df.groupby(cat).mean()[response])
     return df
 
-
-def perform_feature_engineering(df, response):
+def perform_feature_engineering(df, cols):
     '''
     input:
               df: pandas dataframe
-              response: string of response name [optional argument that could be used for naming variables or index y column]
+              cols: string of response name [optional argument that could be used for naming variables or index y column]
 
     output:
               X_train: X training data
@@ -98,107 +97,16 @@ def perform_feature_engineering(df, response):
               y_train: y training data
               y_test: y testing data
     '''
-# gender encoded column
-    gender_lst = []
-    gender_groups = df.groupby('Gender').mean()['Churn']
+    y = df['Churn']
+    X = pd.DataFrame()
+    X[cols] = df[cols]
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.3, random_state=42)
 
-    for val in df['Gender']:
-        gender_lst.append(gender_groups.loc[val])
-
-    df['Gender_Churn'] = gender_lst    
-
-#education encoded column
-    edu_lst = []
-    edu_groups = df.groupby('Education_Level').mean()['Churn']
-
-    for val in df['Education_Level']:
-        edu_lst.append(edu_groups.loc[val])
-
-    df['Education_Level_Churn'] = edu_lst
-
-#marital encoded column
-    marital_lst = []
-    marital_groups = df.groupby('Marital_Status').mean()['Churn']
-
-    for val in df['Marital_Status']:
-        marital_lst.append(marital_groups.loc[val])
-
-    df['Marital_Status_Churn'] = marital_lst
-
-#income encoded column
-    income_lst = []
-    income_groups = df.groupby('Income_Category').mean()['Churn']
-
-    for val in df['Income_Category']:
-        income_lst.append(income_groups.loc[val])
-
-    df['Income_Category_Churn'] = income_lst
-
-#card encoded column
-    card_lst = []
-    card_groups = df.groupby('Card_Category').mean()['Churn']
- 
-    for val in df['Card_Category']:
-        card_lst.append(card_groups.loc[val])
-
-    df['Card_Category_Churn'] = card_lst
-
-def classification_report_image(y_train,
-                                y_test,
-                                y_train_preds_lr,
-                                y_train_preds_rf,
-                                y_test_preds_lr,
-                                y_test_preds_rf):
-    '''
-    produces classification report for training and testing results and stores report as image
-    in images folder
-    input:
-            y_train: training response values
-            y_test:  test response values
-            y_train_preds_lr: training predictions from logistic regression
-            y_train_preds_rf: training predictions from random forest
-            y_test_preds_lr: test predictions from logistic regression
-            y_test_preds_rf: test predictions from random forest
-
-    output:
-             None
-    '''
-    
-
-def feature_importance_plot(model, X_data, output_pth):
-    '''
-    creates and stores the feature importances in pth
-    input:
-            model: model object containing feature_importances_
-            X_data: pandas dataframe of X values
-            output_pth: path to store the figure
-
-    output:
-             None
-    '''
-    # Calculate feature importances
-    importances = cv_rfc.best_estimator_.feature_importances_
-    # Sort feature importances in descending order
-    indices = np.argsort(importances)[::-1]
-
-    # Rearrange feature names so they match the sorted feature importances
-    names = [X.columns[i] for i in indices]
-
-    # Create plot
-    plt.figure(figsize=(20,5))
-
-    # Create plot title
-    plt.title("Feature Importance")
-    plt.ylabel('Importance')
-
-    # Add bars
-    plt.bar(range(X.shape[1]), importances[indices])
-
-    # Add feature names as x-axis labels
-    plt.xticks(range(X.shape[1]), names, rotation=90);
+    return X_train, X_test, y_train, y_test, X, y
 
 
-def train_models(X_train, X_test, y_train, y_test):
+def train_models(X_train, X_test, y_train, y_test, X, y, params):
     '''
     train, store model results: images + scores, and store models
     input:
@@ -219,12 +127,65 @@ def train_models(X_train, X_test, y_train, y_test):
         # Reference: https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression
     lrc = LogisticRegression(solver='lbfgs', max_iter=3000)
 
+    cv_rfc = GridSearchCV(estimator=rfc, param_grid=params, cv=5)
+    cv_rfc.fit(X_train, y_train)
+
+    lrc.fit(X_train, y_train)
+
+    y_train_preds_rf = cv_rfc.best_estimator_.predict(X_train)
+    y_test_preds_rf = cv_rfc.best_estimator_.predict(X_test)
+
+    y_train_preds_lr = lrc.predict(X_train)
+    y_test_preds_lr = lrc.predict(X_test)
+
+    # scores
+    print('random forest results')
+    print('test results')
+    print(classification_report(y_test, y_test_preds_rf))
+    print('train results')
+    print(classification_report(y_train, y_train_preds_rf))
+
+    print('logistic regression results')
+    print('test results')
+    print(classification_report(y_test, y_test_preds_lr))
+    print('train results')
+    print(classification_report(y_train, y_train_preds_lr))
+
+
+def classification_report_image(y_train,
+                                y_test,
+                                y_train_preds_lr,
+                                y_train_preds_rf,
+                                y_test_preds_lr,
+                                y_test_preds_rf,
+                                X_train,
+                                X_test):
+    '''
+    produces classification report for training and testing results and stores report as image
+    in images folder
+    input:
+            y_train: training response values
+            y_test:  test response values
+            y_train_preds_lr: training predictions from logistic regression
+            y_train_preds_rf: training predictions from random forest
+            y_test_preds_lr: test predictions from logistic regression
+            y_test_preds_rf: test predictions from random forest
+
+    output:
+             None
+    '''
+    # grid search
+    rfc = RandomForestClassifier(random_state=42)
+    # Use a different solver if the default 'lbfgs' fails to converge
+    # Reference: https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression
+    lrc = LogisticRegression(solver='lbfgs', max_iter=3000)
+
     param_grid = { 
-    'n_estimators': [200, 500],
-    'max_features': ['auto', 'sqrt'],
-    'max_depth' : [4,5,100],
-    'criterion' :['gini', 'entropy']
-}
+        'n_estimators': [200, 500],
+        'max_features': ['auto', 'sqrt'],
+        'max_depth' : [4,5,100],
+        'criterion' :['gini', 'entropy']
+    }
 
     cv_rfc = GridSearchCV(estimator=rfc, param_grid=param_grid, cv=5)
     cv_rfc.fit(X_train, y_train)
@@ -249,3 +210,33 @@ def train_models(X_train, X_test, y_train, y_test):
     print(classification_report(y_test, y_test_preds_lr))
     print('train results')
     print(classification_report(y_train, y_train_preds_lr))
+
+
+def feature_importance_plot(model, X, output_pth):
+    '''
+    creates and stores the feature importances in pth
+    input:
+            model: model object containing feature_importances_
+            X_data: pandas dataframe of X values
+            output_pth: path to store the figure
+
+    output:
+             None
+    '''
+    # Calculate feature importances
+    importances = model.best_estimator_.feature_importances_
+
+    # Sort feature importances in descending order
+    indices = np.argsort(importances)[::-1]
+
+    # Rearrange feature names so they match the sorted feature importances
+    names = [X.columns[i] for i in indices]
+
+    plt.figure(figsize=(18, 7))
+    plt.title("Feature Importance")
+    plt.ylabel('Importance')
+    plt.bar(range(X.shape[1]), importances[indices])
+    plt.xticks(range(X.shape[1]), names, rotation=90)
+    plt.tight_layout()
+    plt.savefig('./images/feature_importance.png')
+
