@@ -1,0 +1,6 @@
+root - INFO - SUCCESS: Testing import_data
+root - INFO - SUCCESS: There are rows and columns
+root - INFO - SUCCESS: All file names are present in directory
+root - INFO - SUCCESS: Columns were added to the end with _churn 
+root - ERROR - Variable element: FAILED The (7088,) doesnt have the right index
+root - INFO - SUCCESS: Testing train_models
