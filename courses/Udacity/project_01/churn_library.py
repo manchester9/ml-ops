@@ -16,7 +16,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import GridSearchCV
 
-from sklearn.metrics import plot_roc_curve, classification_report
+from sklearn.metrics import classification_report
 
 os.environ['QT_QPA_PLATFORM']='offscreen'
 
@@ -95,7 +95,7 @@ def perform_eda(df):
     
     plt.figure(figsize=(20,10)) 
     df.Marital_Status.value_counts('normalize').plot(kind='bar')
-    plt.savefig('./images/eda/martial_status_bins')
+    plt.savefig('./images/eda/marital_status_bins')
 
     plt.figure(figsize=(20,10)) 
         # distplot is deprecated. Use histplot instead

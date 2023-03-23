@@ -71,9 +71,7 @@ def test_eda(perform_eda):
 
 
 def test_encoder_helper(encoder_helper, df):
-	'''
-	test encoder helper
-	'''
+	
 	col_names = [
         'Gender_Churn',
         'Education_Level_Churn',
@@ -101,9 +99,7 @@ def test_encoder_helper(encoder_helper, df):
 
 
 def test_perform_feature_engineering(perform_feature_engineering, df, KEEP_COLS):
-	'''
-	test perform_feature_engineering
-	'''
+	
 	X_train, X_test, y_train, y_test, X, y = perform_feature_engineering(
             df, KEEP_COLS)
 
@@ -112,29 +108,32 @@ def test_perform_feature_engineering(perform_feature_engineering, df, KEEP_COLS)
 	lst = [X_train, X_test, y_train, y_test]
 		
 	try:
-		for element in lst:
-			assert element.shape[0] > 0
-			assert element.shape[1] > 0
+		for i in range(len(lst)):
+			if i <= 1:
+				assert lst[i].shape[0] > 0
+				assert lst[i].shape[1] > 0
+			else:
+				assert lst[i].shape[0] > 0
+				#assert lst[i].shape[1] == 1
 		logging.info('SUCCESS: Dataframes are not empty')
 
 	except AssertionError as err:
-		logging.error(f'Testing ingestion file: FAILED The {element} file doesnt appear to have rows and columns')
+		logging.error(f'Testing ingestion file: FAILED The {lst[i]} file doesnt appear to have rows and columns')
 		raise err
 	except IndexError as ind:
 		# for element in lst:
-		logging.error(f'Variable element: FAILED The {element.shape} doesnt have the right index')
-		print(element.head(4))
+		logging.error(f'Variable element: FAILED element {i} with shape {lst[i].shape} doesnt have the right index')
+		print(lst[i].head(4))
 
 
-def test_train_models(train_models):
-	'''
-	test train_models
-	'''
+def test_train_models(train_models,X,y):
+	### needs X and y from perform_feature_engineering for train_test_split function
+	## the X and y being provided are inadequate somehow
 	try:
 		# train_models()
 		logging.info("SUCCESS: Testing train_models")
-		y = df['Churn']
-		X = pd.DataFrame()
+	#	y = df['Churn']  ## comment out?
+	#	X = pd.DataFrame()  ## comment out?
 		X_train, X_test, y_train, y_test = train_test_split(X, y, test_size= 0.3, random_state=42)
 		train_models(X_train, X_test, y_train, y_test, X, y, cls.params)
 	except MemoryError as err:
@@ -148,14 +147,37 @@ if __name__ == "__main__":
 	df = import_data('./data/bank_data.csv')
 	test_eda(perform_eda)
 	test_encoder_helper(encoder_helper, df)
+
+
 	df = encoder_helper(df, category_list, 'Churn')
 	
 	test_perform_feature_engineering(perform_feature_engineering, df, KEEP_COLS)
-	
-	test_train_models(train_models)
+	X_TRAIN, X_TEST, Y_TRAIN, Y_TEST, X, y = perform_feature_engineering(
+		df, KEEP_COLS)
+	test_train_models(train_models,X,y)
 
 
+'''
+we could produce a report by storing each result in a list
+then displaying a summary of all results
 
+  passed_cases = len(list(filter(lambda x: x, result)))
+    failed_cases = len(list(filter(lambda x: not x, result)))
+    TOTAL_CASES = len(result)
+
+    if all(result):
+        # log success as final result
+        logging.info("Final Test Result : Success %s/%s",
+                     passed_cases, TOTAL_CASES
+                     )
+    else:
+        # log failure as final result
+        logging.error("Final Test Result : Failed %s/%s",
+                      failed_cases, TOTAL_CASES
+                      )
+
+
+'''
 
 
 
