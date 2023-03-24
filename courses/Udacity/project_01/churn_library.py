@@ -59,9 +59,6 @@ params = {
     }
 
 
-
-
-
 def import_data(pth):
     '''
     returns dataframe for the csv found at pth

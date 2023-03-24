@@ -51,27 +51,8 @@ def test_eda(perform_eda):
 		logging.error(f'File not found: {file}')		
 		raise err
 	
-		
-	# 	# check if expected files exist
-	# 	assert all(os.path.isfile(file_name) for file_name in file_names)
-
-    #     # check if expected files are not empty
-    #     assert all(os.stat(file_name).st_size >
-    #                0 for file_name in file_names)
-
-    #     logging.info("Testing test_eda: SUCCESS")
-    # except AssertionError as err:
-    #     logging.error(
-    #         "Testing test_eda: FAILED Some files were not found or empty %s",
-    #         list(
-    #             filter(
-    #                 lambda x: not os.path.isfile(x),
-    #                 file_names)))
-    #     raise err
-
-
-def test_encoder_helper(encoder_helper, df):
 	
+def test_encoder_helper(encoder_helper, df):
 	col_names = [
         'Gender_Churn',
         'Education_Level_Churn',
@@ -132,8 +113,6 @@ def test_train_models(train_models,X,y):
 	try:
 		# train_models()
 		logging.info("SUCCESS: Testing train_models")
-	#	y = df['Churn']  ## comment out?
-	#	X = pd.DataFrame()  ## comment out?
 		X_train, X_test, y_train, y_test = train_test_split(X, y, test_size= 0.3, random_state=42)
 		train_models(X_train, X_test, y_train, y_test, X, y, cls.params)
 	except MemoryError as err:
@@ -143,41 +122,54 @@ def test_train_models(train_models,X,y):
 
 
 if __name__ == "__main__":
-	test_import(import_data)
-	df = import_data('./data/bank_data.csv')
-	test_eda(perform_eda)
-	test_encoder_helper(encoder_helper, df)
-
-
-	df = encoder_helper(df, category_list, 'Churn')
+	result = []
+	try:
+		test_import(import_data)
+		df = import_data('./data/bank_data.csv')
+		result.append(True)
+		print('Success: Importing data')
+	except Exception as e:
+		result.append(False)
 	
-	test_perform_feature_engineering(perform_feature_engineering, df, KEEP_COLS)
-	X_TRAIN, X_TEST, Y_TRAIN, Y_TEST, X, y = perform_feature_engineering(
-		df, KEEP_COLS)
-	test_train_models(train_models,X,y)
+	try:
+		test_eda(perform_eda)
+		test_encoder_helper(encoder_helper, df)
+		result.append(True)
+		print('Success: Performing eda')
+	except Exception as e:
+		result.append(False)
 
+	try:
+		df = encoder_helper(df, category_list, 'Churn')
+		test_perform_feature_engineering(perform_feature_engineering, df, KEEP_COLS)
+		X_TRAIN, X_TEST, Y_TRAIN, Y_TEST, X, y = perform_feature_engineering(
+			df, KEEP_COLS)
+		result.append(True)
+		print('Success: Feature encoder helper')
+	except Exception as e:
+		result.append(False)
+	
+	try:
+		test_train_models(train_models,X,y)
+		result.append(True)
+		print('Success: Train models')
+	except Exception as e:
+		result.append(False)
 
-'''
-we could produce a report by storing each result in a list
-then displaying a summary of all results
+	passed_cases = len(list(filter(lambda x: x, result)))
+	failed_cases = len(list(filter(lambda x: not x, result)))
+	TOTAL_CASES = len(result)
 
-  passed_cases = len(list(filter(lambda x: x, result)))
-    failed_cases = len(list(filter(lambda x: not x, result)))
-    TOTAL_CASES = len(result)
-
-    if all(result):
-        # log success as final result
-        logging.info("Final Test Result : Success %s/%s",
-                     passed_cases, TOTAL_CASES
-                     )
-    else:
-        # log failure as final result
-        logging.error("Final Test Result : Failed %s/%s",
-                      failed_cases, TOTAL_CASES
-                      )
-
-
-'''
+	if all(result):
+		logging.info("Final Test Result : Success %s/%s",
+					passed_cases, TOTAL_CASES
+					)
+		print(f'Final test results: Success {passed_cases} / {TOTAL_CASES}')
+	else:
+		logging.error("Final Test Result : Failed %s/%s",
+					failed_cases, TOTAL_CASES
+					)
+		print(f'Final test results: Failed {failed_cases} / {TOTAL_CASES}')
 
 
 
