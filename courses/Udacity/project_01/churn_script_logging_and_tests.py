@@ -4,6 +4,7 @@ from churn_library import *
 import churn_library as cls
 from sklearn.model_selection import train_test_split
 import pandas as pd
+import numpy as np
 
 logging.basicConfig(
     filename='./logs/churn_library.log',
